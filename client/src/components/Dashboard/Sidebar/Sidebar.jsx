@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { GrLogout } from 'react-icons/gr'
 import { FcSettings } from 'react-icons/fc'
 import { AiOutlineBars } from 'react-icons/ai'
-import { BsGraphUp } from 'react-icons/bs'
+
 import MenuItem from './Menu/MenuItem'
 
 import useAuth from '../../../hooks/useAuth'
@@ -74,11 +74,7 @@ const Sidebar = () => {
               <CustomerMenu />
               <SellerMenu />
 
-              <MenuItem
-                icon={BsGraphUp}
-                label='Statistics'
-                address='/dashboard'
-              />
+          
               <AdminMenu />
             </nav>
           </div>
