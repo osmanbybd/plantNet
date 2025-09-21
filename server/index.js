@@ -46,7 +46,7 @@ async function run() {
   const plantsCollection = client.db("plantNetDB").collection("plants");
   const ordersCollection = client.db("plantNetDB").collection("orders");
   const usersCollection = client.db("plantNetDB").collection("users");
-  
+
   try {
     // again repeat
     // Generate jwt token
@@ -122,17 +122,31 @@ async function run() {
     });
 
     // save or update a user info in db
-    app.post("/user", async (req, res) =>{
-       const userData = req.body;
-       userData.role = "customer";
-       userData.created_at = Date.now();
-       userData.last_loggedIn = Date.now();
-       return console.log(userData)
-       const result = await usersCollection.insertOne(userData);
-       res.send(result);
-    })
+    app.post("/user", async (req, res) => {
+      const userData = req.body;
+      userData.role = "customer";
+      userData.created_at = Date.now();
+      userData.last_loggedIn = Date.now();
+      const query = {
+        email: userData?.email,
+      };
+      const alreadyExists = await usersCollection.findOne(query);
+      console.log(!!alreadyExists)
 
+      if (!!alreadyExists) {
+        console.log("updating user Data...")
+        const result = await usersCollection.updateOne(
+           query ,
+          { $set: { last_loggedIn: Date.now() } }
+        );
+        return res.send(result);
+      }
+       console.log("creating user Data...")
 
+      //  return console.log(userData)
+      const result = await usersCollection.insertOne(userData);
+      res.send(result);
+    });
 
     // save order data in orders collection id db
 
