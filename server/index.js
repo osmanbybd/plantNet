@@ -125,8 +125,8 @@ async function run() {
     app.post("/user", async (req, res) => {
       const userData = req.body;
       userData.role = "customer";
-      userData.created_at = Date.now();
-      userData.last_loggedIn = Date.now();
+      userData.created_at = new Date().toISOString();
+      userData.last_loggedIn = new Date().toISOString();
       const query = {
         email: userData?.email,
       };
@@ -137,7 +137,7 @@ async function run() {
         console.log("updating user Data...")
         const result = await usersCollection.updateOne(
            query ,
-          { $set: { last_loggedIn: Date.now() } }
+          { $set: { last_loggedIn: new Date().toISOString() } }
         );
         return res.send(result);
       }
