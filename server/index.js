@@ -138,15 +138,26 @@ async function run() {
         const result = await usersCollection.updateOne(
            query ,
           { $set: { last_loggedIn: new Date().toISOString() } }
-        );
+        );  
         return res.send(result);
       }
        console.log("creating user Data...")
 
       //  return console.log(userData)
       const result = await usersCollection.insertOne(userData);
+      if(!result) return res.status(404).send({message: "User Not Found!"})
       res.send(result);
     });
+
+
+    // get user's role api
+     app.get("/user/role/:email", async (req, res) =>{
+       const email = req.params.email;
+       const result = await usersCollection.findOne({email});
+       res.send({role: result?.role});
+     })
+
+
 
     // save order data in orders collection id db
 
