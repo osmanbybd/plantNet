@@ -5,9 +5,12 @@ import PurchaseModal from '../../components/Modal/PurchaseModal'
 import { useState } from 'react'
 import { useLoaderData } from 'react-router'
 import useAuth from '../../hooks/useAuth'
+import useRole from '../../hooks/useRole'
+import LoadingSpinner from '../../components/Shared/LoadingSpinner'
 
 const PlantDetails = () => {
   const {user} = useAuth()
+  const [role,isRoleLoading] = useRole()
   const plant = useLoaderData()
     const [isOpen, setIsOpen] = useState(false)
     if(!plant || typeof plant !== 'object') return <p>sorry bro you will back to home !</p>
@@ -20,6 +23,8 @@ const PlantDetails = () => {
     
     setIsOpen(false)
   }
+
+  if(isRoleLoading) return <LoadingSpinner></LoadingSpinner>
 
   return (
     <Container>
@@ -88,7 +93,7 @@ const PlantDetails = () => {
           <div className='flex justify-between'>
             <p className='font-bold text-3xl text-gray-500'>Price: {price}$</p>
             <div>
-              <Button disabled={!user || user?.email === seller?.email} onClick={() => setIsOpen(true)} label={user ? "Purchase" : "Login to Purchase"} />
+              <Button disabled={!user || user?.email === seller?.email || role !== 'customer'} onClick={() => setIsOpen(true)} label={user ? "Purchase" : "Login to Purchase"} />
             </div>
           </div>
           <hr className='my-6' />
