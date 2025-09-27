@@ -97,7 +97,8 @@ const CheckoutForm = ({ totalPrice, closeModal, orderData }) => {
             `/quantity-update/:${orderData.plantId}`,
             { quantityToUpdate: orderData?.quantity, status: "decrease" }
           );
-          
+
+          console.log(result);
         }
         console.log(data);
       } catch (err) {
