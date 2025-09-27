@@ -167,6 +167,16 @@ async function run() {
       res.send(result);
     });
 
+    // update plant Quantity (increase/decrease)
+    app.patch("/quantity-update/:id" , async(req, res) =>{
+      const id = req.params.id;
+      const {quantityToUpdate, status} = req.body;
+      console.log(quantityToUpdate, status)
+    })
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(

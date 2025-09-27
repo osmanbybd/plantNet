@@ -22,6 +22,7 @@ const CheckoutForm = ({ totalPrice, closeModal, orderData }) => {
         quantity: orderData?.quantity,
         plantId: orderData?.plantId,
       });
+
       setClientSecret(data?.clientSecret);
     };
     getClientSecret();
@@ -91,6 +92,12 @@ const CheckoutForm = ({ totalPrice, closeModal, orderData }) => {
             showConfirmButton: false,
             timer: 1500,
           });
+
+          const { data: result } = await axiosSecure.patch(
+            `/quantity-update/:${orderData.plantId}`,
+            { quantityToUpdate: orderData?.quantity, status: "decrease" }
+          );
+          
         }
         console.log(data);
       } catch (err) {
