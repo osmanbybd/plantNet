@@ -1,120 +1,147 @@
-import Container from '../../components/Shared/Container'
-import Heading from '../../components/Shared/Heading'
-import Button from '../../components/Shared/Button/Button'
-import PurchaseModal from '../../components/Modal/PurchaseModal'
-import { useEffect, useState } from 'react'
-import { useLoaderData, useParams } from 'react-router'
-import useAuth from '../../hooks/useAuth'
-import useRole from '../../hooks/useRole'
-import LoadingSpinner from '../../components/Shared/LoadingSpinner'
-import axios from 'axios'
+import Container from "../../components/Shared/Container";
+import Heading from "../../components/Shared/Heading";
+import Button from "../../components/Shared/Button/Button";
+import PurchaseModal from "../../components/Modal/PurchaseModal";
+// import { useEffect, useState } from 'react'
+// import { useLoaderData, useParams } from 'react-router'
+import useAuth from "../../hooks/useAuth";
+import useRole from "../../hooks/useRole";
+import LoadingSpinner from "../../components/Shared/LoadingSpinner";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useParams } from "react-router";
 
 const PlantDetails = () => {
   const {id} = useParams()
-  const {user} = useAuth()
-  const [role,isRoleLoading] = useRole()
+  const { user } = useAuth();
+  const [role, isRoleLoading] = useRole();
   // const plant = useLoaderData()
-  const [plant, setPlant] =useState({}) 
-  useEffect(() =>{
-    fetchData()
-  },[id])
-    const [isOpen, setIsOpen] = useState(false)
-    if(!plant || typeof plant !== 'object') return <p>sorry bro you will back to home !</p>
-  const {name , price , category , quantity , seller , image, description, _id  } = plant || {};
+  // const [plant, setPlant] =useState({})
+  // useEffect(() =>{
+  //   fetchData()
+  // },[id])
 
+  const {
+    data: plant,
+    isLoading,
+    refetch,
+    
+  } = useQuery({
+    queryKey: ["plant", id],
+    queryFn: async () => {
+      const { data } = await axios(
+        `${import.meta.env.VITE_API_URL}/plant/${id}`
+      );
+      return data;
+    },
+  });
 
-  
-  // fetch data 
-  const fetchData= async () =>{
-    const {data} = await axios(`${import.meta.env.VITE_API_URL}/plant/${id}`)
-    setPlant(data)
-  }
+  console.log(plant);
 
+  const [isOpen, setIsOpen] = useState(false);
+  if (!plant || typeof plant !== "object")
+    return <p>sorry bro you will back to home !</p>;
+  const { name, price, category, quantity, seller, image, description, _id } =
+    plant || {};
+
+  // fetch data
+  // const fetchData= async () =>{
+  //   const {data} = await axios(`${import.meta.env.VITE_API_URL}/plant/${id}`)
+  //   setPlant(data)
+  // }
 
   const closeModal = () => {
-    
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
 
-  if(isRoleLoading) return <LoadingSpinner></LoadingSpinner>
+  if (isRoleLoading || isLoading) return <LoadingSpinner></LoadingSpinner>;
 
   return (
     <Container>
-      <div className='mx-auto flex flex-col lg:flex-row justify-between w-full gap-12'>
+      <div className="mx-auto flex flex-col lg:flex-row justify-between w-full gap-12">
         {/* Header */}
-        <div className='flex flex-col gap-6 flex-1'>
+        <div className="flex flex-col gap-6 flex-1">
           <div>
-            <div className='w-full overflow-hidden rounded-xl'>
+            <div className="w-full overflow-hidden rounded-xl">
               <img
-                className='object-cover w-full'
+                className="object-cover w-full"
                 src={image}
-                alt='header image'
+                alt="header image"
               />
             </div>
           </div>
         </div>
-        <div className='md:gap-10 flex-1'>
+        <div className="md:gap-10 flex-1">
           {/* Plant Info */}
-          <Heading
-            title={name}
-            subtitle={`Category: ${category}`}
-          />
-          <hr className='my-6' />
+          <Heading title={name} subtitle={`Category: ${category}`} />
+          <hr className="my-6" />
           <div
-            className='
-          text-lg font-light text-neutral-500'
+            className="
+          text-lg font-light text-neutral-500"
           >
-          {description}
+            {description}
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
 
           <div
-            className='
+            className="
                 text-xl 
                 font-semibold 
                 flex 
                 flex-row 
                 items-center
                 gap-2
-              '
+              "
           >
             <div>Seller: {seller?.name}</div>
 
             <img
-              className='rounded-full'
-              height='30'
-              width='30'
-              alt='Avatar'
-              referrerPolicy='no-referrer'
-              src={seller?.image }
+              className="rounded-full"
+              height="30"
+              width="30"
+              alt="Avatar"
+              referrerPolicy="no-referrer"
+              src={seller?.image}
             />
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
           <div>
             <p
-              className='
+              className="
                 gap-4 
                 font-light
                 text-neutral-500
-              '
+              "
             >
               Quantity: {quantity} Units Left Only!
             </p>
           </div>
-          <hr className='my-6' />
-          <div className='flex justify-between'>
-            <p className='font-bold text-3xl text-gray-500'>Price: {price}$</p>
+          <hr className="my-6" />
+          <div className="flex justify-between">
+            <p className="font-bold text-3xl text-gray-500">Price: {price}$</p>
             <div>
-              <Button disabled={!user || user?.email === seller?.email || role !== 'customer'} onClick={() => setIsOpen(true)} label={user ? "Purchase" : "Login to Purchase"} />
+              <Button
+                disabled={
+                  !user || user?.email === seller?.email || role !== "customer"
+                }
+                onClick={() => setIsOpen(true)}
+                label={user ? "Purchase" : "Login to Purchase"}
+              />
             </div>
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
 
-          <PurchaseModal plant={plant} closeModal={closeModal} isOpen={isOpen} fetchData={fetchData} />
+          <PurchaseModal
+            plant={plant}
+            closeModal={closeModal}
+            isOpen={isOpen}
+            fetchData={refetch}
+          />
         </div>
       </div>
     </Container>
-  )
-}
+  );
+};
 
-export default PlantDetails
+export default PlantDetails;
