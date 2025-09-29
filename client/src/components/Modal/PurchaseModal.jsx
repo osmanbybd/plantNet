@@ -13,7 +13,7 @@ import CheckoutForm from "../Form/CheckoutForm.JSX";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK_KEY);
 
 
-const PurchaseModal = ({ closeModal, isOpen, plant }) => {
+const PurchaseModal = ({ closeModal, isOpen, plant, fetchData }) => {
   
   
   const { user } = useAuth();
@@ -117,7 +117,7 @@ const PurchaseModal = ({ closeModal, isOpen, plant }) => {
 
             {/* stripe checkout form */}
             <Elements stripe={stripePromise}>
-              <CheckoutForm  totalPrice={totalPrice} closeModal={closeModal} orderData={orderData}/>
+              <CheckoutForm  totalPrice={totalPrice} closeModal={closeModal} orderData={orderData} fetchData={fetchData}/>
             </Elements>
           </DialogPanel>
         </div>

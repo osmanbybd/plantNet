@@ -6,7 +6,7 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 
-const CheckoutForm = ({ totalPrice, closeModal, orderData }) => {
+const CheckoutForm = ({ totalPrice, closeModal, orderData , fetchData}) => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const stripe = useStripe();
@@ -94,10 +94,10 @@ const CheckoutForm = ({ totalPrice, closeModal, orderData }) => {
           });
 
           const { data: result } = await axiosSecure.patch(
-            `/quantity-update/:${orderData.plantId}`,
+            `/quantity-update/${orderData.plantId}`,
             { quantityToUpdate: orderData?.quantity, status: "decrease" }
           );
-
+          fetchData();
           console.log(result);
         }
         console.log(data);

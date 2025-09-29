@@ -171,7 +171,16 @@ async function run() {
     app.patch("/quantity-update/:id" , async(req, res) =>{
       const id = req.params.id;
       const {quantityToUpdate, status} = req.body;
-      console.log(quantityToUpdate, status)
+      const filter = {_id : new ObjectId(id)};
+      const updateDoc = {
+        $inc :{
+          quantity : status === "increase" ? quantityToUpdate : -quantityToUpdate ,   //increase or decrease quantity 
+        }
+        
+      }
+
+      const result = await plantsCollection.updateOne(filter, updateDoc);
+      res.send(result);
     })
 
 

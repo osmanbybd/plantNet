@@ -2,22 +2,34 @@ import Container from '../../components/Shared/Container'
 import Heading from '../../components/Shared/Heading'
 import Button from '../../components/Shared/Button/Button'
 import PurchaseModal from '../../components/Modal/PurchaseModal'
-import { useState } from 'react'
-import { useLoaderData } from 'react-router'
+import { useEffect, useState } from 'react'
+import { useLoaderData, useParams } from 'react-router'
 import useAuth from '../../hooks/useAuth'
 import useRole from '../../hooks/useRole'
 import LoadingSpinner from '../../components/Shared/LoadingSpinner'
+import axios from 'axios'
 
 const PlantDetails = () => {
+  const {id} = useParams()
   const {user} = useAuth()
   const [role,isRoleLoading] = useRole()
-  const plant = useLoaderData()
+  // const plant = useLoaderData()
+  const [plant, setPlant] =useState({}) 
+  useEffect(() =>{
+    fetchData()
+  },[id])
     const [isOpen, setIsOpen] = useState(false)
     if(!plant || typeof plant !== 'object') return <p>sorry bro you will back to home !</p>
   const {name , price , category , quantity , seller , image, description, _id  } = plant || {};
 
 
   
+  // fetch data 
+  const fetchData= async () =>{
+    const {data} = await axios(`${import.meta.env.VITE_API_URL}/plant/${id}`)
+    setPlant(data)
+  }
+
 
   const closeModal = () => {
     
@@ -98,7 +110,7 @@ const PlantDetails = () => {
           </div>
           <hr className='my-6' />
 
-          <PurchaseModal plant={plant} closeModal={closeModal} isOpen={isOpen} />
+          <PurchaseModal plant={plant} closeModal={closeModal} isOpen={isOpen} fetchData={fetchData} />
         </div>
       </div>
     </Container>
