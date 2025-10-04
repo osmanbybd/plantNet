@@ -35,7 +35,7 @@ console.log(role)
   //   }
   //   fetchUserRole()
   // }, [user, axiosSecure]);
-  console.log(role)
+  // console.log(role)
   return [role?.role, isRoleLoading];
 
 };

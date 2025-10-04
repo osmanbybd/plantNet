@@ -1,4 +1,4 @@
-const Button = ({ label, onClick, disabled, outline, small, icon: Icon }) => {
+const Button = ({ label, onClick, disabled, outline, small, icon: Icon  }) => {
   return (
     <button
       disabled={disabled}

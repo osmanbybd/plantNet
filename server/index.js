@@ -131,33 +131,41 @@ async function run() {
         email: userData?.email,
       };
       const alreadyExists = await usersCollection.findOne(query);
-      console.log(!!alreadyExists)
+      console.log(!!alreadyExists);
 
       if (!!alreadyExists) {
-        console.log("updating user Data...")
-        const result = await usersCollection.updateOne(
-           query ,
-          { $set: { last_loggedIn: new Date().toISOString() } }
-        );  
+        console.log("updating user Data...");
+        const result = await usersCollection.updateOne(query, {
+          $set: { last_loggedIn: new Date().toISOString() },
+        });
         return res.send(result);
       }
-       console.log("creating user Data...")
+      console.log("creating user Data...");
 
       //  return console.log(userData)
       const result = await usersCollection.insertOne(userData);
-      if(!result) return res.status(404).send({message: "User Not Found!"})
+      if (!result) return res.status(404).send({ message: "User Not Found!" });
       res.send(result);
     });
 
+    // get all user data for admin
+    app.get("/all-users", verifyToken, async (req, res) => {
+      console.log(req.user);
+      const filter = {
+        email: {
+          $ne: req?.user?.email,
+        },
+      };
+      const result = await usersCollection.find(filter).toArray();
+      res.send(result);
+    });
 
     // get user's role api
-     app.get("/user/role/:email", async (req, res) =>{
-       const email = req.params.email;
-       const result = await usersCollection.findOne({email});
-       res.send({role: result?.role});
-     })
-
-
+    app.get("/user/role/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
+      res.send({ role: result?.role });
+    });
 
     // save order data in orders collection id db
 
@@ -168,19 +176,57 @@ async function run() {
     });
 
     // update plant Quantity (increase/decrease)
-    app.patch("/quantity-update/:id" , async(req, res) =>{
+    app.patch("/quantity-update/:id", async (req, res) => {
       const id = req.params.id;
-      const {quantityToUpdate, status} = req.body;
-      const filter = {_id : new ObjectId(id)};
+      const { quantityToUpdate, status } = req.body;
+      const filter = { _id: new ObjectId(id) };
       const updateDoc = {
-        $inc :{
-          quantity : status === "increase" ? quantityToUpdate : -quantityToUpdate ,   //increase or decrease quantity 
-        }
-        
-      }
+        $inc: {
+          quantity:
+            status === "increase" ? quantityToUpdate : -quantityToUpdate, //increase or decrease quantity
+        },
+      };
 
       const result = await plantsCollection.updateOne(filter, updateDoc);
       res.send(result);
+    });
+
+    // update user role
+    app.patch("/user/role/update/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      const { role } = req.body;
+      console.log(role);
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          role,
+          status: "verified",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
+
+    // become a seller
+    app.patch("/become-seller/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          status: "requested",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
+
+    // admin state 
+    app.get('/admin-state', async(req, res) =>{
+      const totalUser = await usersCollection.estimatedDocumentCount()
+      res.send({totalUser})
     })
 
 
