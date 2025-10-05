@@ -80,7 +80,7 @@ const Sidebar = () => {
               {role === "customer" && <CustomerMenu />}
               {role === "seller" && <SellerMenu />}
               {role === "admin" && <AdminMenu />}
-              {/* <CustomerMenu /> */}
+            {/* <CustomerMenu /> */}
               {/* <SellerMenu /> */}
             </nav>
           </div>

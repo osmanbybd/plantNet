@@ -226,7 +226,9 @@ async function run() {
     // admin state 
     app.get('/admin-state', async(req, res) =>{
       const totalUser = await usersCollection.estimatedDocumentCount()
-      res.send({totalUser})
+      const totalPlant = await plantsCollection.estimatedDocumentCount()
+      const totalOrder = await ordersCollection.estimatedDocumentCount()
+      res.send({totalUser, totalPlant,totalOrder})
     })
 
 
