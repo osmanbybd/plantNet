@@ -223,16 +223,45 @@ async function run() {
       res.send(result);
     });
 
-    // admin state 
-    app.get('/admin-state', async(req, res) =>{
-      const totalUser = await usersCollection.estimatedDocumentCount()
-      const totalPlant = await plantsCollection.estimatedDocumentCount()
-      const totalOrder = await ordersCollection.estimatedDocumentCount()
-      res.send({totalUser, totalPlant,totalOrder})
-    })
+    // admin state
+    app.get("/admin-state", async (req, res) => {
+      const totalUser = await usersCollection.estimatedDocumentCount();
+      const totalPlant = await plantsCollection.estimatedDocumentCount();
+      const totalOrder = await ordersCollection.estimatedDocumentCount();
+      const result = await ordersCollection
+        .aggregate([
+          {
+            $addFields: {
+              createdAt: { $toDate: "$_id" },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                $dateToString: {
+                  format: "%Y-%m-%d",
+                  date: "$createdAt",
+                },
+              },
+              revenue: {
+                $sum: "$price",
+              },
+              order: { $sum: 1 },
+            },
+          },
+        ])
+        .toArray();
 
+      const barChartData = result.map((data) => ({
+        date: data._id,
+        totalRevenue: data.revenue,
+        order: data.order,
+      }));
 
+      const totalRevenue = result.reduce((sum , data) => sum + data?.revenue ,0)
 
+      res.send({totalPlant, totalUser, barChartData, totalOrder, totalRevenue});
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });

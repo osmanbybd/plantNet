@@ -22,9 +22,9 @@ const AdminStatistics = () => {
     <div>
       <div className='mt-12'>
         {/* small cards */}
-        <div className='mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-grow'>
+        <div className='mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  flex-grow'>
           {/* Sales Card */}
-          <div className='relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md'>
+          <div className='relative flex flex-col  bg-clip-border rounded-xl bg-white text-gray-700 shadow-md'>
             <div
               className={`bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center from-orange-600 to-orange-400 text-white shadow-orange-500/40`}
             >
@@ -35,7 +35,7 @@ const AdminStatistics = () => {
                 Total Revenue
               </p>
               <h4 className='block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900'>
-                $120
+                ${data?.totalRevenue}
               </h4>
             </div>
           </div>
