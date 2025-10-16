@@ -48,6 +48,32 @@ async function run() {
   const usersCollection = client.db("plantNetDB").collection("users");
 
   try {
+
+
+      const verifyAdmin = async (req , res , next) =>{
+        const email =req?.user?.email;
+        const user = await usersCollection.findOne(email)
+        if(!user || user?.role !== 'admin') return res.status(403).send({message : 'you are not admin'})
+        
+        
+        
+        next()
+      }
+
+
+      const verifySeller = async (req , res , next) =>{
+        const email =req?.user?.email;
+        const user = await usersCollection.findOne(email)
+        if(!user || user?.role !== 'seller') return res.status(403).send({message : 'you are not admin'})
+        
+        
+        
+        next()
+      }
+
+
+
+
     // again repeat
     // Generate jwt token
     app.post("/jwt", async (req, res) => {
@@ -79,7 +105,7 @@ async function run() {
     });
 
     // ADD a plant db api
-    app.post("/plants", async (req, res) => {
+    app.post("/plants",verifyToken, verifySeller,  async (req, res) => {
       const plant = req.body;
       console.log(plant);
       const result = await plantsCollection.insertOne(plant);
@@ -149,7 +175,7 @@ async function run() {
     });
 
     // get all user data for admin
-    app.get("/all-users", verifyToken, async (req, res) => {
+    app.get("/all-users", async (req, res) => {
       console.log(req.user);
       const filter = {
         email: {
@@ -167,6 +193,16 @@ async function run() {
       res.send({ role: result?.role });
     });
 
+    // / get all order info for customer
+    app.get("/order/customer/:email", verifyToken, async (req, res) =>{
+      const email = req.params.email;
+      const filter = {'customer.email' : email};
+      const result = await ordersCollection.find(filter).toArray();
+      res.send(result)
+    })
+
+
+
     // save order data in orders collection id db
 
     app.post("/order", async (req, res) => {
@@ -176,7 +212,7 @@ async function run() {
     });
 
     // update plant Quantity (increase/decrease)
-    app.patch("/quantity-update/:id", async (req, res) => {
+    app.patch("/quantity-update/:id",  async (req, res) => {
       const id = req.params.id;
       const { quantityToUpdate, status } = req.body;
       const filter = { _id: new ObjectId(id) };
@@ -192,7 +228,7 @@ async function run() {
     });
 
     // update user role
-    app.patch("/user/role/update/:email", verifyToken, async (req, res) => {
+    app.patch("/user/role/update/:email", verifyToken, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const { role } = req.body;
       console.log(role);
@@ -224,7 +260,7 @@ async function run() {
     });
 
     // admin state
-    app.get("/admin-state", async (req, res) => {
+    app.get("/admin-state",verifyToken,verifyAdmin,  async (req, res) => {
       const totalUser = await usersCollection.estimatedDocumentCount();
       const totalPlant = await plantsCollection.estimatedDocumentCount();
       const totalOrder = await ordersCollection.estimatedDocumentCount();
@@ -254,7 +290,7 @@ async function run() {
 
       const barChartData = result.map((data) => ({
         date: data._id,
-        totalRevenue: data.revenue,
+        revenue: data.revenue,
         order: data.order,
       }));
 

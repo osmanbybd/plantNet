@@ -3,6 +3,8 @@ import { BsFillCartPlusFill, BsFillHouseDoorFill } from 'react-icons/bs'
 import { useQuery } from '@tanstack/react-query'
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
 import LoadingSpinner from '../../Shared/LoadingSpinner'
+import OrderChart from '../../Chart/OrderChart'
+import Calendar from 'react-calendar';
 
 const AdminStatistics = () => {
   const axiosSecure = useAxiosSecure()
@@ -93,10 +95,12 @@ const AdminStatistics = () => {
           {/*Sales Bar Chart */}
           <div className='relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden xl:col-span-2'>
             {/* Chart goes here.. */}
+            <OrderChart barChartData={data?.barChartData}></OrderChart>
           </div>
           {/* Calender */}
           <div className=' relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden'>
             {/* Calender */}
+            <Calendar  />
           </div>
         </div>
       </div>

@@ -21,9 +21,9 @@ const PurchaseModal = ({ closeModal, isOpen, plant, fetchData }) => {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(price);
   const [orderData, setOrderData] = useState({
-    customar: {
+    customer: {
       name: user?.displayName,
-      emai: user?.email,
+      email: user?.email,
       image: user?.photoURL,
     },
     seller,
