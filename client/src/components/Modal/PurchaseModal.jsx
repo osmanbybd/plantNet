@@ -33,6 +33,7 @@ const PurchaseModal = ({ closeModal, isOpen, plant, fetchData }) => {
     plantName: name,
     plantQuantity: quantity,
     plantImage: image,
+    plantCategory: category,
   });
   const handleQuantity = (value) => {
     const totalQuantity = parseInt(value);

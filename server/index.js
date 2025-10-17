@@ -52,7 +52,7 @@ async function run() {
 
       const verifyAdmin = async (req , res , next) =>{
         const email =req?.user?.email;
-        const user = await usersCollection.findOne(email)
+        const user = await usersCollection.findOne({email})
         if(!user || user?.role !== 'admin') return res.status(403).send({message : 'you are not admin'})
         
         
@@ -63,7 +63,7 @@ async function run() {
 
       const verifySeller = async (req , res , next) =>{
         const email =req?.user?.email;
-        const user = await usersCollection.findOne(email)
+        const user = await usersCollection.findOne({email})
         if(!user || user?.role !== 'seller') return res.status(403).send({message : 'you are not admin'})
         
         
@@ -77,8 +77,9 @@ async function run() {
     // again repeat
     // Generate jwt token
     app.post("/jwt", async (req, res) => {
-      const email = req.body;
-      const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET, {
+      const {email} = req.body;
+      console.log(email);
+      const token = jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "365d",
       });
       res
@@ -175,12 +176,13 @@ async function run() {
     });
 
     // get all user data for admin
-    app.get("/all-users", async (req, res) => {
+    app.get("/all-users",verifyToken, verifyAdmin, async (req, res) => {
       console.log(req.user);
       const filter = {
         email: {
           $ne: req?.user?.email,
         },
+        role: { $in: ["customer", "seller"] },
       };
       const result = await usersCollection.find(filter).toArray();
       res.send(result);
@@ -194,14 +196,20 @@ async function run() {
     });
 
     // / get all order info for customer
-    app.get("/order/customer/:email", verifyToken, async (req, res) =>{
+    app.get("/orders/customer/:email", async (req, res) =>{
       const email = req.params.email;
       const filter = {'customer.email' : email};
       const result = await ordersCollection.find(filter).toArray();
       res.send(result)
     })
 
-
+  // / get all order info for seller
+    app.get("/order/seller/:email", verifyToken, verifySeller, async (req, res) =>{
+      const email = req.params.email;
+      const filter = {'seller.email' : email};
+      const result = await ordersCollection.find(filter).toArray();
+      res.send(result)
+    })
 
     // save order data in orders collection id db
 
@@ -228,7 +236,7 @@ async function run() {
     });
 
     // update user role
-    app.patch("/user/role/update/:email", verifyToken, verifyAdmin, async (req, res) => {
+    app.patch("/user/role/update/:email", verifyToken,  async (req, res) => {
       const email = req.params.email;
       const { role } = req.body;
       console.log(role);
@@ -259,8 +267,8 @@ async function run() {
       res.send(result);
     });
 
-    // admin state
-    app.get("/admin-state",verifyToken,verifyAdmin,  async (req, res) => {
+    // admin state   {error handle problem}
+    app.get("/admin-state",verifyToken,  async (req, res) => {
       const totalUser = await usersCollection.estimatedDocumentCount();
       const totalPlant = await plantsCollection.estimatedDocumentCount();
       const totalOrder = await ordersCollection.estimatedDocumentCount();
