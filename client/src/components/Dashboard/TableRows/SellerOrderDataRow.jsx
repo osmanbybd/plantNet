@@ -1,8 +1,21 @@
 import { useState } from 'react'
 import DeleteModal from '../../Modal/DeleteModal'
+// import { useMutation } from '@tanstack/react-query'
+// import useAxiosSecure from '../../../hooks/useAxiosSecure'
+// import useAuth from '../../../hooks/useAuth'
 const SellerOrderDataRow = () => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
+  // const {user} = useAuth()
+  // const [orderUpdate, setOrderUpdate] = useState(pending)
+  // const axiosSecure = useAxiosSecure()
+  // const mutation = useMutation({
+  //   mutationFn:async (update) =>{
+  //     const {data} = await axiosSecure.patch(`/orders/seller/update/${user?.email}`, {pending})
+  //   }
+  // })
+
+
 
   return (
     <tr>

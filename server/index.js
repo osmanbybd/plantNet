@@ -48,38 +48,30 @@ async function run() {
   const usersCollection = client.db("plantNetDB").collection("users");
 
   try {
+    const verifyAdmin = async (req, res, next) => {
+      const email = req?.user?.email;
+      const user = await usersCollection.findOne({ email });
+      if (!user || user?.role !== "admin")
+        return res.status(403).send({ message: "you are not admin" });
 
+      next();
+    };
 
-      const verifyAdmin = async (req , res , next) =>{
-        const email =req?.user?.email;
-        const user = await usersCollection.findOne({email})
-        if(!user || user?.role !== 'admin') return res.status(403).send({message : 'you are not admin'})
-        
-        
-        
-        next()
-      }
+    const verifySeller = async (req, res, next) => {
+      const email = req?.user?.email;
+      const user = await usersCollection.findOne({ email });
+      if (!user || user?.role !== "seller")
+        return res.status(403).send({ message: "you are not sellerF" });
 
-
-      const verifySeller = async (req , res , next) =>{
-        const email =req?.user?.email;
-        const user = await usersCollection.findOne({email})
-        if(!user || user?.role !== 'seller') return res.status(403).send({message : 'you are not admin'})
-        
-        
-        
-        next()
-      }
-
-
-
+      next();
+    };
 
     // again repeat
     // Generate jwt token
     app.post("/jwt", async (req, res) => {
-      const {email} = req.body;
+      const { email } = req.body;
       console.log(email);
-      const token = jwt.sign({email}, process.env.ACCESS_TOKEN_SECRET, {
+      const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "365d",
       });
       res
@@ -106,7 +98,7 @@ async function run() {
     });
 
     // ADD a plant db api
-    app.post("/plants",verifyToken, verifySeller,  async (req, res) => {
+    app.post("/plants", verifyToken, verifySeller, async (req, res) => {
       const plant = req.body;
       console.log(plant);
       const result = await plantsCollection.insertOne(plant);
@@ -176,7 +168,7 @@ async function run() {
     });
 
     // get all user data for admin
-    app.get("/all-users",verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/all-users", verifyToken, verifyAdmin, async (req, res) => {
       console.log(req.user);
       const filter = {
         email: {
@@ -196,20 +188,42 @@ async function run() {
     });
 
     // / get all order info for customer
-    app.get("/orders/customer/:email", async (req, res) =>{
+    app.get("/orders/customer/:email", async (req, res) => {
       const email = req.params.email;
-      const filter = {'customer.email' : email};
+      const filter = { "customer.email": email };
       const result = await ordersCollection.find(filter).toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-  // / get all order info for seller
-    app.get("/order/seller/:email", verifyToken, verifySeller, async (req, res) =>{
+    // / get all order info for seller
+    app.get(
+      "/order/seller/:email",
+      verifyToken,
+      verifySeller,
+      async (req, res) => {
+        const email = req.params.email;
+        const filter = { "seller.email": email };
+        const result = await ordersCollection.find(filter).toArray();
+        res.send(result);
+      }
+    );
+
+    // sellerOrder  update
+    app.patch("/seller/update/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
-      const filter = {'seller.email' : email};
-      const result = await ordersCollection.find(filter).toArray();
-      res.send(result)
-    })
+      const { update } = req.body;
+      console.log(role);
+      const filter = { email: email };
+      const updateDoc = {
+        $set: {
+          update,
+          status: "pending",
+        },
+      };
+      const result = await ordersCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
 
     // save order data in orders collection id db
 
@@ -220,7 +234,7 @@ async function run() {
     });
 
     // update plant Quantity (increase/decrease)
-    app.patch("/quantity-update/:id",  async (req, res) => {
+    app.patch("/quantity-update/:id", async (req, res) => {
       const id = req.params.id;
       const { quantityToUpdate, status } = req.body;
       const filter = { _id: new ObjectId(id) };
@@ -236,7 +250,7 @@ async function run() {
     });
 
     // update user role
-    app.patch("/user/role/update/:email", verifyToken,  async (req, res) => {
+    app.patch("/user/role/update/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       const { role } = req.body;
       console.log(role);
@@ -268,7 +282,7 @@ async function run() {
     });
 
     // admin state   {error handle problem}
-    app.get("/admin-state",verifyToken,  async (req, res) => {
+    app.get("/admin-state", verifyToken, async (req, res) => {
       const totalUser = await usersCollection.estimatedDocumentCount();
       const totalPlant = await plantsCollection.estimatedDocumentCount();
       const totalOrder = await ordersCollection.estimatedDocumentCount();
@@ -302,9 +316,15 @@ async function run() {
         order: data.order,
       }));
 
-      const totalRevenue = result.reduce((sum , data) => sum + data?.revenue ,0)
+      const totalRevenue = result.reduce((sum, data) => sum + data?.revenue, 0);
 
-      res.send({totalPlant, totalUser, barChartData, totalOrder, totalRevenue});
+      res.send({
+        totalPlant,
+        totalUser,
+        barChartData,
+        totalOrder,
+        totalRevenue,
+      });
     });
 
     // Send a ping to confirm a successful connection
