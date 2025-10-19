@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import DeleteModal from '../../Modal/DeleteModal'
-const CustomerOrderDataRow = ({order, refetch}) => {
+const CustomerOrderDataRow = ({order, }) => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
   const {plantImage , plantName, category, price, quantity, status} = order;

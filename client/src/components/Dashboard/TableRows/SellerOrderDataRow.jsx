@@ -3,9 +3,15 @@ import DeleteModal from '../../Modal/DeleteModal'
 // import { useMutation } from '@tanstack/react-query'
 // import useAxiosSecure from '../../../hooks/useAxiosSecure'
 // import useAuth from '../../../hooks/useAuth'
-const SellerOrderDataRow = () => {
+const SellerOrderDataRow = ({order}) => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
+
+  console.log(order)
+  const {customer , plantName,price, quantity, location, pending, name} = order;
+
+
+
   // const {user} = useAuth()
   // const [orderUpdate, setOrderUpdate] = useState(pending)
   // const axiosSecure = useAxiosSecure()

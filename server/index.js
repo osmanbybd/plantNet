@@ -59,7 +59,7 @@ async function run() {
 
     const verifySeller = async (req, res, next) => {
       const email = req?.user?.email;
-      const user = await usersCollection.findOne({ email });
+      const user = await usersCollection.findOne({ email })
       if (!user || user?.role !== "seller")
         return res.status(403).send({ message: "you are not sellerF" });
 
@@ -100,8 +100,9 @@ async function run() {
     // ADD a plant db api
     app.post("/plants", verifyToken, verifySeller, async (req, res) => {
       const plant = req.body;
-      console.log(plant);
       const result = await plantsCollection.insertOne(plant);
+      console.log(result);
+      
       res.send(result);
     });
     // get all plants data from db
@@ -192,6 +193,7 @@ async function run() {
       const email = req.params.email;
       const filter = { "customer.email": email };
       const result = await ordersCollection.find(filter).toArray();
+      console.log(result)
       res.send(result);
     });
 
@@ -204,26 +206,27 @@ async function run() {
         const email = req.params.email;
         const filter = { "seller.email": email };
         const result = await ordersCollection.find(filter).toArray();
+        console.log({email, filter,result});
         res.send(result);
       }
     );
 
-    // sellerOrder  update
-    app.patch("/seller/update/:email", verifyToken, async (req, res) => {
-      const email = req.params.email;
-      const { update } = req.body;
-      console.log(role);
-      const filter = { email: email };
-      const updateDoc = {
-        $set: {
-          update,
-          status: "pending",
-        },
-      };
-      const result = await ordersCollection.updateOne(filter, updateDoc);
-      console.log(result);
-      res.send(result);
-    });
+    // // sellerOrder  update
+    // app.patch("/seller/update/:email", verifyToken, async (req, res) => {
+    //   const email = req.params.email;
+    //   const { update } = req.body;
+    //   console.log(role);
+    //   const filter = { email: email };
+    //   const updateDoc = {
+    //     $set: {
+    //       update,
+    //       status: "pending",
+    //     },
+    //   };
+    //   const result = await ordersCollection.updateOne(filter, updateDoc);
+    //   console.log(result);
+    //   res.send(result);
+    // });
 
     // save order data in orders collection id db
 
