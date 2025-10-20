@@ -1,4 +1,6 @@
+
 import axios from "axios";
+
 
 export const imageUpload = async imageData =>{
         const imageFormData = new FormData();
@@ -10,10 +12,22 @@ export const imageUpload = async imageData =>{
     return data?.data?.display_url
 }
 
-
 // save or update user a info  in dv
 
 export const saveUserInDb = async user =>{
     const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/user`, user)
     console.log(data);
+}
+
+
+
+
+
+
+ export const deleteOrderid = () =>{
+    
+
+
+
+
 }

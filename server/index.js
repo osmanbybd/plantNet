@@ -211,22 +211,20 @@ async function run() {
       }
     );
 
-    // // sellerOrder  update
-    // app.patch("/seller/update/:email", verifyToken, async (req, res) => {
-    //   const email = req.params.email;
-    //   const { update } = req.body;
-    //   console.log(role);
-    //   const filter = { email: email };
-    //   const updateDoc = {
-    //     $set: {
-    //       update,
-    //       status: "pending",
-    //     },
-    //   };
-    //   const result = await ordersCollection.updateOne(filter, updateDoc);
-    //   console.log(result);
-    //   res.send(result);
-    // });
+    // sellerOrder  update
+    app.patch("/seller/update/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const { status } = req.body;
+      const filter = { _id : new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status : status,
+        },
+      };
+      const result = await ordersCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
 
     // save order data in orders collection id db
 
@@ -251,6 +249,17 @@ async function run() {
       const result = await plantsCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
+    // order collection deleted 
+    app.delete("/order/deleted/:id" , async (req, res) =>{
+      const  id = req.params.id;
+      const  filter = {_id : new ObjectId(id)};
+      const result = await ordersCollection.deleteOne(filter);
+      res.send(result);
+    })
+
+
+
 
     // update user role
     app.patch("/user/role/update/:email", verifyToken, async (req, res) => {

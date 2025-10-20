@@ -3,6 +3,7 @@ import SellerOrderDataRow from "../../../components/Dashboard/TableRows/SellerOr
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
+import { Bounce, ToastContainer } from "react-toastify";
 
 const ManageOrders = () => {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ const ManageOrders = () => {
       const { data } = await axiosSecure(`/order/seller/${user?.email}`);
       return data;
     },
+    
   });
 
   console.log(sellers);
@@ -28,6 +30,19 @@ const ManageOrders = () => {
 
   return (
     <>
+    <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick={false}
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+transition={Bounce}
+/>
       <div className="container mx-auto px-4 sm:px-8">
         <div className="py-8">
           <div className="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
@@ -81,7 +96,7 @@ const ManageOrders = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sellers.map(order => <SellerOrderDataRow key={order._id} order={order} /> )}
+                  {sellers.map(order => <SellerOrderDataRow key={order._id} order={order} refetch={refetch} sellers={sellers} /> )}
                   
                 </tbody>
               </table>

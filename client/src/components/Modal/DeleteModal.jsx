@@ -1,6 +1,12 @@
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+import OrderDelete from '../../api/OrderDelete'
+import LoadingSpinner from '../Shared/LoadingSpinner'
 
-const DeleteModal = ({ closeModal, isOpen }) => {
+const DeleteModal = ({ closeModal, isOpen ,deleteId, sellers,refetch}) => {
+
+  const {handleOrderDelete, isLoading} = OrderDelete(sellers)
+
+  if(isLoading) return <LoadingSpinner></LoadingSpinner>
   return (
     <Dialog
       open={isOpen}
@@ -29,6 +35,8 @@ const DeleteModal = ({ closeModal, isOpen }) => {
             <div className='flex mt-2 justify-around'>
               <button
                 type='button'
+                onClick={()=>handleOrderDelete(deleteId , closeModal,refetch)}
+              
                 className='inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2'
               >
                 Yes
