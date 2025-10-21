@@ -3,7 +3,7 @@ import DeleteModal from '../../Modal/DeleteModal'
 const CustomerOrderDataRow = ({order, }) => {
   let [isOpen, setIsOpen] = useState(false)
   const closeModal = () => setIsOpen(false)
-  const {plantImage , plantName, category, price, quantity, status} = order;
+  const {plantImage , plantName, price, quantity,plantCategory, status,seller ,_id} = order;
   return (
     <tr>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
@@ -24,7 +24,7 @@ const CustomerOrderDataRow = ({order, }) => {
         <p className='text-gray-900 whitespace-no-wrap'>{plantName}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900 whitespace-no-wrap'>{category}</p>
+        <p className='text-gray-900 whitespace-no-wrap'>{plantCategory}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
         <p className='text-gray-900 whitespace-no-wrap'>${price}</p>
@@ -33,7 +33,11 @@ const CustomerOrderDataRow = ({order, }) => {
         <p className='text-gray-900 whitespace-no-wrap'>{quantity}</p>
       </td>
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
-        <p className='text-gray-900 whitespace-no-wrap'>{status}</p>
+        <p className='text-gray-900 whitespace-no-wrap'>{seller.email}</p>
+      </td>
+    
+      <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
+        <p className='text-gray-900 whitespace-no-wrap'>{status ? status : 'pending'}</p>
       </td>
 
       <td className='px-5 py-5 border-b border-gray-200 bg-white text-sm'>
@@ -45,7 +49,7 @@ const CustomerOrderDataRow = ({order, }) => {
           <span className='relative cursor-pointer'>Cancel</span>
         </button>
 
-        <DeleteModal isOpen={isOpen} closeModal={closeModal} />
+        <DeleteModal isOpen={isOpen} closeModal={closeModal}  deleteId={_id}/>
       </td>
     </tr>
   )
